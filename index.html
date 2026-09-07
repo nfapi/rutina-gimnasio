@@ -1,0 +1,1281 @@
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-dim: #64748b;
+
+  --accent-cyan: #38bdf8;
+  --accent-indigo: #6366f1;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+
+  --emerald-glow: rgba(16, 185, 129, 0.15);
+  --cyan-glow: rgba(56, 189, 248, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(56, 189, 248, 0.08) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  padding: 16px;
+  padding-bottom: 60px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* Glass Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 20px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+}
+
+.brand-logo svg {
+  width: 22px;
+  height: 22px;
+  fill: #ffffff;
+}
+
+.brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-text p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Modern Sticky Tabs / Segmented Control */
+.tabs-wrapper {
+  position: sticky;
+  top: 12px;
+  z-index: 100;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 5px;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 11px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2));
+  color: #ffffff;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Modern Progress Section */
+.progress-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--card-border);
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+
+.progress-percent {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  letter-spacing: -0.5px;
+}
+
+.progress-bar-bg {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+/* Day View */
+.day-content {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.day-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.day-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.day-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.finish-day-btn {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--accent-emerald);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.finish-day-btn:active {
+  transform: scale(0.96);
+  background: rgba(16, 185, 129, 0.25);
+}
+
+/* Group Box */
+.group-box {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border: 1px solid var(--card-border);
+}
+
+.group-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Exercise Card */
+.exercise-item {
+  background: rgba(10, 15, 26, 0.6);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-item.completed {
+  background: rgba(16, 185, 129, 0.04);
+  border-color: rgba(16, 185, 129, 0.3);
+  opacity: 0.65;
+}
+
+.exercise-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 2px solid var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.exercise-item.completed .custom-checkbox {
+  background: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  transform: scale(1.05);
+}
+
+.custom-checkbox svg {
+  width: 16px;
+  height: 16px;
+  stroke: #ffffff;
+  stroke-width: 3;
+  fill: none;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+
+.exercise-item.completed .custom-checkbox svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.exercise-info {
+  flex-grow: 1;
+}
+
+.exercise-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.exercise-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.exercise-item.completed .exercise-name {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+/* Modern Video Pill Button */
+.video-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.video-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: var(--accent-cyan);
+}
+
+.video-btn:active {
+  transform: scale(0.95);
+  background: var(--accent-cyan);
+  color: var(--bg-dark);
+}
+
+.video-btn:active svg {
+  fill: var(--bg-dark);
+}
+
+/* Details and Badges */
+.exercise-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge.obs {
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Weight Control Stepper Widget */
+.weight-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 2px 4px;
+  gap: 2px;
+}
+
+.stepper-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.stepper-btn:active {
+  background: var(--accent-cyan);
+  color: var(--bg-dark);
+}
+
+.weight-input {
+  width: 42px;
+  background: transparent;
+  border: none;
+  color: var(--accent-cyan);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+.weight-unit {
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* Progression Alert Tag */
+.progression-tag {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--accent-amber);
+  font-size: 0.74rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+}
+
+.counter-badge {
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+
+<!-- Bloque 1 -->
+<div class="group-box">
+  <div class="group-title">Bloque 1 — Entrada en Calor</div>
+  <div class="exercise-item" data-id="d1_ex1">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Buenos Días</span>
+          <button class="video-btn" onclick="openVideo('Buenos Días ejercicio')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex2">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Cadera Acostado</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Cadera Acostado')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex3">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Plancha Abriendo Piernas Alternadas</span>
+          <button class="video-btn" onclick="openVideo('Plancha Abriendo Piernas Alternadas')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 2 -->
+<div class="group-box">
+  <div class="group-title">Bloque 2 — Isquios y Gemelos</div>
+  <div class="exercise-item" data-id="d1_ex4">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad de Isquio Acostado</span>
+          <button class="video-btn" onclick="openVideo('Movilidad de Isquio Acostado')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex5">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Gemelos a 1pp sobre Disco</span>
+          <button class="video-btn" onclick="openVideo('Gemelos a una pierna sobre Disco')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 3 -->
+<div class="group-box">
+  <div class="group-title">Bloque 3 — Aductores y Cadera</div>
+  <div class="exercise-item" data-id="d1_ex6">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Aductores</span>
+          <button class="video-btn" onclick="openVideo('Aductores en maquina')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex7">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Aductores hacia los Lados</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Aductores hacia los Lados')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex8">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Hip Thrust</span>
+          <button class="video-btn" onclick="openVideo('Hip Thrust tecnica')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 4 -->
+<div class="group-box">
+  <div class="group-title">Bloque 4 — Cuádriceps y Estocadas</div>
+  <div class="exercise-item" data-id="d1_ex9">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Sillón de Cuádriceps a una Pierna</span>
+          <button class="video-btn" onclick="openVideo('Sillon de Cuadriceps a una Pierna')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="20" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d1_ex10">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Estocada + Rotación</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Estocada con Rotacion')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">6-8 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bloque 1 -->
+<div class="group-box">
+  <div class="group-title">Bloque 1 — Entrada en Calor</div>
+  <div class="exercise-item" data-id="d2_ex1">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Cadera Adentro/Afuera</span>
+          <button class="video-btn" onclick="openVideo('Movilidad cadera adentro afuera baston')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex2">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Cobra</span>
+          <button class="video-btn" onclick="openVideo('Ejercicio Cobra postura')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+          <span class="badge obs">Obs: Mantener en Cobras</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex3">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Tobillo Arrodillado</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Tobillo Arrodillado')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 2 -->
+<div class="group-box">
+  <div class="group-title">Bloque 2 — Piernas y Hombros</div>
+  <div class="exercise-item" data-id="d2_ex4">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Sentadilla en Smith</span>
+          <button class="video-btn" onclick="openVideo('Sentadilla en maquina Smith')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">4 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="15" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex5">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Abductores</span>
+          <button class="video-btn" onclick="openVideo('Abductores en maquina')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">4 Series</span>
+          <span class="badge">12 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="40" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex6">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Vuelos Frontales</span>
+          <button class="video-btn" onclick="openVideo('Vuelos Frontales mancuernas')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">4 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="5" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 3 -->
+<div class="group-box">
+  <div class="group-title">Bloque 3 — Espalda e Isquios</div>
+  <div class="exercise-item" data-id="d2_ex7">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Prono (Jalón/Remo)</span>
+          <button class="video-btn" onclick="openVideo('Jalon prono polea alta')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10-12 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="35" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex8">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Peso Muerto a una Pierna</span>
+          <button class="video-btn" onclick="openVideo('Peso Muerto a una Pierna')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="12" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex9">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Activa Pocas</span>
+          <button class="video-btn" onclick="openVideo('Movilidad activa cadera hombros')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 4 -->
+<div class="group-box">
+  <div class="group-title">Bloque 4 — Glúteos y Núcleo</div>
+  <div class="exercise-item" data-id="d2_ex10">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Glúteos en Máquina</span>
+          <button class="video-btn" onclick="openVideo('Gluteos en Maquina patron')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex11">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Lateral Abs Toe Touch</span>
+          <button class="video-btn" onclick="openVideo('Lateral Abs Toe Touch')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">20 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d2_ex12">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Escapular en Cuadrupedía</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Escapular en Cuadrupedia')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bloque 1 -->
+<div class="group-box">
+  <div class="group-title">Bloque 1 — Entrada en Calor</div>
+  <div class="exercise-item" data-id="d3_ex1">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Lumbar con Pierna Cruzada</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Lumbar con Pierna Cruzada')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex2">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad Tobillo a Pared</span>
+          <button class="video-btn" onclick="openVideo('Movilidad Tobillo a Pared')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex3">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Plancha Toco Hombro</span>
+          <button class="video-btn" onclick="openVideo('Plancha Toco Hombro')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 2 -->
+<div class="group-box">
+  <div class="group-title">Bloque 2 — Piernas y Biceps</div>
+  <div class="exercise-item" data-id="d3_ex4">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Sentadilla Sumo</span>
+          <button class="video-btn" onclick="openVideo('Sentadilla Sumo tecnica')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">4 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex5">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Bíceps Barra W</span>
+          <button class="video-btn" onclick="openVideo('Biceps Barra W')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">4 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 3 -->
+<div class="group-box">
+  <div class="group-title">Bloque 3 — Brazos y Movilidad</div>
+  <div class="exercise-item" data-id="d3_ex6">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Bíceps Martillo</span>
+          <button class="video-btn" onclick="openVideo('Curl Biceps Martillo')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex7">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Elevaciones Pies en la Pelota</span>
+          <button class="video-btn" onclick="openVideo('Elevaciones Pies en Pelota fitball')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex8">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad 90-90</span>
+          <button class="video-btn" onclick="openVideo('Movilidad cadera 90 90')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bloque 4 -->
+<div class="group-box">
+  <div class="group-title">Bloque 4 — Gemelos, Bíceps y Rodilla</div>
+  <div class="exercise-item" data-id="d3_ex9">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Gemelos a 45° en Prensa</span>
+          <button class="video-btn" onclick="openVideo('Gemelos en prensa 45 grados')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -2.5)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 2.5)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex10">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Curl de Bíceps en Polea</span>
+          <button class="video-btn" onclick="openVideo('Curl de Biceps en Polea')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">12 Reps</span>
+          <div class="weight-stepper">
+            <button class="stepper-btn" onclick="adjustWeight(this, -1)">-</button>
+            <input type="number" class="weight-input" value="0" step="0.5" onchange="updateWeight(this)">
+            <span class="weight-unit">kg</span>
+            <button class="stepper-btn" onclick="adjustWeight(this, 1)">+</button>
+          </div>
+        </div>
+        <div class="progression-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise-item" data-id="d3_ex11">
+    <div class="exercise-header">
+      <div class="custom-checkbox" onclick="toggleExercise(this)">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="exercise-info">
+        <div class="exercise-top-row">
+          <span class="exercise-name">Movilidad de Rodilla con Banda</span>
+          <button class="video-btn" onclick="openVideo('Movilidad de Rodilla con Banda elastic')">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Video
+          </button>
+        </div>
+        <div class="exercise-details">
+          <span class="badge">3 Series</span>
+          <span class="badge">8-10 Reps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
