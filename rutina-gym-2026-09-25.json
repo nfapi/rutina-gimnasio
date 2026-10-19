@@ -1,0 +1,105 @@
+{
+  "version": 2,
+  "weights": {
+    "d1_ex6": 32.5,
+    "d1_ex8": 0,
+    "d1_ex9": 20,
+    "d2_ex4": 15,
+    "d2_ex5": 40,
+    "d2_ex6": 5,
+    "d2_ex7": 35,
+    "d2_ex8": 12,
+    "d2_ex10": 0,
+    "d3_ex4": 0,
+    "d3_ex5": 0,
+    "d3_ex6": 0,
+    "d3_ex9": 0,
+    "d3_ex10": 0
+  },
+  "sessions": {
+    "2026-09-25-day-1": {
+      "date": "2026-09-25",
+      "day": 1,
+      "finishedAt": "2026-09-25T20:45:53.447Z",
+      "completed": true,
+      "exercises": [
+        {
+          "id": "d1_ex1",
+          "name": "Buenos Días",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex2",
+          "name": "Movilidad Cadera Acostado",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex3",
+          "name": "Plancha Abriendo Piernas Alternadas",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex4",
+          "name": "Movilidad de Isquio Acostado",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex5",
+          "name": "Gemelos a 1pp sobre Disco",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex6",
+          "name": "Aductores",
+          "completed": true,
+          "weightKg": 27.5
+        },
+        {
+          "id": "d1_ex7",
+          "name": "Movilidad Aductores hacia los Lados",
+          "completed": false,
+          "weightKg": null
+        },
+        {
+          "id": "d1_ex8",
+          "name": "Hip Thrust",
+          "completed": false,
+          "weightKg": 0
+        },
+        {
+          "id": "d1_ex9",
+          "name": "Sillón de Cuádriceps a una Pierna",
+          "completed": false,
+          "weightKg": 20
+        },
+        {
+          "id": "d1_ex10",
+          "name": "Movilidad Estocada + Rotación",
+          "completed": false,
+          "weightKg": null
+        }
+      ],
+      "updatedAt": "2026-09-25T20:45:53.447Z"
+    },
+    "2026-09-24-day-1": {
+      "date": "2026-09-24",
+      "day": 1,
+      "finishedAt": "2026-09-24T18:00:00.000Z",
+      "completed": true,
+      "updatedAt": "2026-09-24T18:00:00.000Z",
+      "exercises": [
+        {
+          "id": "d1_ex6",
+          "name": "Aductores",
+          "completed": true,
+          "weightKg": 32.5
+        }
+      ]
+    }
+  }
+}
