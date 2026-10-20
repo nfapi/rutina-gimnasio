@@ -708,6 +708,15 @@ header {
       background: transparent;
       color: var(--accent-emerald);
     }
+    .start-workout-btn { min-height: 42px; padding: 0 15px; border: 1px solid var(--accent-cyan); border-radius: 8px; background: var(--accent-cyan); color: #182014; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+    .cancel-workout-btn { min-height: 38px; padding: 0 12px; border: 1px solid var(--card-border); border-radius: 8px; background: transparent; color: var(--text-secondary); font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+    .workout-session-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .workout-status { margin: -8px 0 14px; color: var(--text-secondary); font-size: 0.76rem; }
+    .exercise-item.session-locked { opacity: 0.55; }
+    .custom-checkbox[aria-disabled="true"] { cursor: not-allowed; }
+    .exercise-stat { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+    .exercise-stat-detail { grid-column: 1 / -1; color: var(--text-secondary); font-size: 0.72rem; line-height: 1.45; }
+    .exercise-stat-count { text-align: right; }
 
     .group-box {
       margin: 0 0 22px;
@@ -960,7 +969,8 @@ header {
       .progress-card { margin-bottom: 12px; padding: 13px 14px 15px; }
       .day-bar { align-items: center; margin: 20px 0 15px; }
       .day-title { font-size: 1.35rem; }
-      .finish-day-btn { min-height: 40px; padding: 0 10px; font-size: 0.73rem; }
+      .finish-day-btn, .start-workout-btn { min-height: 40px; padding: 0 10px; font-size: 0.73rem; }
+      .workout-session-actions { justify-content: flex-end; }
       .exercise-item { padding: 12px 9px; }
       .exercise-header { gap: 9px; }
       .exercise-name { font-size: 0.86rem; }
@@ -1061,7 +1071,10 @@ header {
       <section class="day-content active" data-day="1">
         <div class="day-bar">
           <h2 class="day-title">Día 1</h2>
-          <button class="finish-day-btn" type="button">Finalizar día</button>
+          <div class="workout-session-actions">
+            <button class="start-workout-btn" type="button">Empezar entrenamiento</button>
+            <button class="finish-day-btn" type="button" hidden>Finalizar y guardar</button>
+          </div>
         </div>
 
 <!-- Bloque 1 -->
@@ -1305,7 +1318,10 @@ header {
       <section class="day-content" data-day="2">
         <div class="day-bar">
           <h2 class="day-title">Día 2</h2>
-          <button class="finish-day-btn" type="button">Finalizar día</button>
+          <div class="workout-session-actions">
+            <button class="start-workout-btn" type="button">Empezar entrenamiento</button>
+            <button class="finish-day-btn" type="button" hidden>Finalizar y guardar</button>
+          </div>
         </div>
 
 <!-- Bloque 1 -->
@@ -1611,7 +1627,10 @@ header {
       <section class="day-content" data-day="3">
         <div class="day-bar">
           <h2 class="day-title">Día 3</h2>
-          <button class="finish-day-btn" type="button">Finalizar día</button>
+          <div class="workout-session-actions">
+            <button class="start-workout-btn" type="button">Empezar entrenamiento</button>
+            <button class="finish-day-btn" type="button" hidden>Finalizar y guardar</button>
+          </div>
         </div>
 
 <!-- Bloque 1 -->
@@ -1894,9 +1913,9 @@ header {
       </div>
       <div class="history-metrics">
         <div class="history-metric"><span>Días terminados</span><strong id="session-count">0</strong></div>
-        <div class="history-metric"><span>Ejercicios realizados</span><strong id="exercise-count">0</strong></div>
+        <div class="history-metric"><span>Último entrenamiento</span><strong id="exercise-count">—</strong></div>
       </div>
-      <h3 class="history-subtitle">Frecuencia por ejercicio</h3>
+      <h3 class="history-subtitle">Progresión de pesos</h3>
       <div class="exercise-stats" id="exercise-stats"></div>
       <h3 class="history-subtitle">Sesiones</h3>
       <div class="history-list" id="history-list" aria-live="polite"></div>
@@ -1944,14 +1963,15 @@ header {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
         return {
-          version: 3,
+          version: 4,
           weights: saved.weights && typeof saved.weights === 'object' ? saved.weights : {},
           sessions: saved.sessions && typeof saved.sessions === 'object' ? saved.sessions : {},
           routines: Array.isArray(saved.routines) ? saved.routines : [],
-          activeRoutineId: typeof saved.activeRoutineId === 'string' ? saved.activeRoutineId : 'default'
+          activeRoutineId: typeof saved.activeRoutineId === 'string' ? saved.activeRoutineId : 'default',
+          activeSession: saved.activeSession && typeof saved.activeSession === 'object' ? saved.activeSession : null
         };
       } catch {
-        return { version: 3, weights: {}, sessions: {}, routines: [], activeRoutineId: 'default' };
+        return { version: 4, weights: {}, sessions: {}, routines: [], activeRoutineId: 'default', activeSession: null };
       }
     }
 
@@ -2003,17 +2023,31 @@ header {
       return local.toISOString().slice(0, 10);
     }
 
-    function sessionKey(date, dayNumber, routineId = workoutData.activeRoutineId) {
-      return routineId === 'default'
-        ? `${date}-day-${dayNumber}`
-        : `${date}-routine-${routineId}-day-${dayNumber}`;
+    function activeSessionForDay(dayNumber) {
+      const session = workoutData.activeSession;
+      return session && session.routineId === workoutData.activeRoutineId && session.day === dayNumber
+        ? session
+        : null;
+    }
+
+    function lastCompletedExercise(exerciseId) {
+      const entries = Object.values(workoutData.sessions)
+        .filter(session => session && (session.finishedAt || session.completed))
+        .flatMap(session => (session.exercises || [])
+          .filter(exercise => exercise.id === exerciseId && exercise.completed !== false)
+          .map(exercise => ({ ...exercise, date: session.date, finishedAt: session.finishedAt || session.updatedAt || '' })))
+        .sort((left, right) => right.date.localeCompare(left.date) ||
+          String(right.finishedAt).localeCompare(String(left.finishedAt)));
+      return entries[0] || null;
     }
 
     function refreshForNewWorkoutDate() {
       const today = localDateKey();
       if (today === observedWorkoutDate) return false;
       observedWorkoutDate = today;
-      document.querySelectorAll('.day-content').forEach(restoreDay);
+      if (!workoutData.activeSession) {
+        document.querySelectorAll('.day-content').forEach(restoreDay);
+      }
       updateProgress();
       return true;
     }
@@ -2026,20 +2060,41 @@ header {
     }
 
     function restoreDay(day) {
-      const date = localDateKey();
       const dayNumber = Number(day.dataset.day);
-      const session = workoutData.sessions[sessionKey(date, dayNumber)];
+      const session = activeSessionForDay(dayNumber);
+      const exerciseRecords = new Map((session?.exercises || []).map(exercise => [exercise.id, exercise]));
       const completedIds = new Set((session?.exercises || [])
         .filter(exercise => exercise.completed !== false)
         .map(exercise => exercise.id));
 
       day.querySelectorAll('.exercise-item').forEach(item => {
         setExerciseCompleted(item, completedIds.has(item.dataset.id));
+        item.classList.toggle('session-locked', !session);
+        const checkbox = item.querySelector('.custom-checkbox');
+        if (checkbox) {
+          checkbox.setAttribute('aria-disabled', String(!session));
+          checkbox.tabIndex = session ? 0 : -1;
+        }
+        item.querySelectorAll('.weight-input, .stepper-btn').forEach(control => {
+          control.disabled = !session;
+        });
         const weightInput = item.querySelector('.weight-input');
-        const savedWeight = workoutData.weights[item.dataset.id];
-        if (weightInput && Number.isFinite(savedWeight)) weightInput.value = savedWeight;
+        const activeExercise = exerciseRecords.get(item.dataset.id);
+        const savedWeight = activeExercise?.weightKg;
+        if (weightInput) {
+          if (session && Number.isFinite(savedWeight)) weightInput.value = savedWeight;
+          else {
+            const lastWeight = lastCompletedExercise(item.dataset.id)?.weightKg;
+            const baseWeight = workoutData.weights[item.dataset.id];
+            const routineExercise = getActiveRoutine()?.days[dayNumber - 1]?.groups
+              .flatMap(group => group.exercises).find(exercise => exercise.id === item.dataset.id);
+            const suggestedWeight = Number.isFinite(lastWeight) ? lastWeight
+              : Number.isFinite(baseWeight) ? baseWeight : routineExercise?.weightKg;
+            if (Number.isFinite(suggestedWeight)) weightInput.value = String(suggestedWeight);
+          }
+        }
       });
-      updateFinishButton(day, Boolean(session?.finishedAt || session?.completed));
+      updateFinishButton(day, Boolean(session));
     }
 
     function setExerciseCompleted(item, completed) {
@@ -2048,40 +2103,23 @@ header {
       if (checkbox) checkbox.setAttribute('aria-checked', String(completed));
     }
 
-    function recordDay(day, finishAction = 'keep') {
-      if (!day) return;
+    function recordActiveSession(day) {
+      if (!day || !workoutData.activeSession) return;
       refreshForNewWorkoutDate();
-      const dayNumber = Number(day.dataset.day);
-      const date = localDateKey();
-      const key = sessionKey(date, dayNumber);
-      const existing = workoutData.sessions[key];
-      const exercises = [...day.querySelectorAll('.exercise-item')].map(item => ({
-        id: item.dataset.id,
-        name: item.querySelector('.exercise-name')?.textContent.trim() || item.dataset.id,
-        completed: item.classList.contains('completed'),
-        weightKg: currentWeight(item)
-      }));
-      const finishedAt = finishAction === 'finish'
-        ? new Date().toISOString()
-        : finishAction === 'reopen' ? null : existing?.finishedAt || null;
-      const hasCompletedExercises = exercises.some(exercise => exercise.completed);
-
-      if (!hasCompletedExercises && !finishedAt) {
-        delete workoutData.sessions[key];
-      } else {
-        const routine = getActiveRoutine();
-        workoutData.sessions[key] = {
-          date,
-          day: dayNumber,
-          routineId: routine?.id || 'default',
-          routineName: routine?.name || 'Rutina principal',
-          finishedAt,
-          completed: Boolean(finishedAt),
-          exercises,
-          updatedAt: new Date().toISOString()
+      const session = workoutData.activeSession;
+      session.exercises = [...day.querySelectorAll('.exercise-item')].map(item => {
+        const previous = session.exercises.find(exercise => exercise.id === item.dataset.id);
+        return {
+          id: item.dataset.id,
+          name: item.querySelector('.exercise-name')?.textContent.trim() || item.dataset.id,
+          completed: item.classList.contains('completed'),
+          weightKg: currentWeight(item),
+          weightStep: previous?.weightStep || 1,
+          sets: previous?.sets || null,
+          reps: previous?.reps || null
         };
-      }
-      updateFinishButton(day, Boolean(finishedAt));
+      });
+      session.updatedAt = new Date().toISOString();
       saveWorkoutData();
     }
 
@@ -2099,10 +2137,7 @@ header {
           if (!exerciseSummary.has(exercise.id)) {
             exerciseSummary.set(exercise.id, {
               id: exercise.id,
-              name: exercise.name,
-              count: 0,
-              lastWeight: null,
-              lastDate: ''
+              name: exercise.name
             });
           }
         })));
@@ -2112,10 +2147,7 @@ header {
         if (!exerciseSummary.has(id)) {
           exerciseSummary.set(id, {
             id,
-            name: item.querySelector('.exercise-name')?.textContent.trim() || id,
-            count: 0,
-            lastWeight: null,
-            lastDate: ''
+            name: item.querySelector('.exercise-name')?.textContent.trim() || id
           });
         }
       });
@@ -2124,32 +2156,16 @@ header {
           if (!exerciseSummary.has(exercise.id)) {
             exerciseSummary.set(exercise.id, {
               id: exercise.id,
-              name: exercise.name || exercise.id,
-              count: 0,
-              lastWeight: null,
-              lastDate: ''
+              name: exercise.name || exercise.id
             });
           }
         });
       });
 
-      let completedExerciseCount = 0;
-      finishedSessions.forEach(session => {
-        session.exercises.forEach(exercise => {
-          if (exercise.completed === false) return;
-          completedExerciseCount += 1;
-          const summary = exerciseSummary.get(exercise.id);
-          if (!summary) return;
-          summary.count += 1;
-          if (Number.isFinite(exercise.weightKg) && session.date >= summary.lastDate) {
-            summary.lastDate = session.date;
-            summary.lastWeight = exercise.weightKg;
-          }
-        });
-      });
-
       document.getElementById('session-count').textContent = finishedSessions.length;
-      document.getElementById('exercise-count').textContent = completedExerciseCount;
+      document.getElementById('exercise-count').textContent = finishedSessions.length
+        ? new Date(`${finishedSessions[0].date}T00:00:00`).toLocaleDateString('es', { day: 'numeric', month: 'short' })
+        : '—';
       const stats = document.getElementById('exercise-stats');
       stats.replaceChildren();
       [...exerciseSummary.values()].forEach(summary => {
@@ -2160,20 +2176,51 @@ header {
         name.textContent = summary.name;
         const count = document.createElement('span');
         count.className = 'exercise-stat-count';
-        count.textContent = `${summary.count} ${summary.count === 1 ? 'vez' : 'veces'}${summary.lastWeight !== null ? ` · ${summary.lastWeight} kg` : ''}`;
+        const records = finishedSessions.flatMap(session => (session.exercises || [])
+          .filter(exercise => exercise.id === summary.id && exercise.completed !== false && Number.isFinite(exercise.weightKg))
+          .map(exercise => ({
+            date: session.date,
+            finishedAt: session.finishedAt || session.updatedAt || '',
+            weightKg: exercise.weightKg,
+            weightStep: exercise.weightStep || 1,
+            routineName: session.routineName || ''
+          })))
+          .sort((left, right) => right.date.localeCompare(left.date) ||
+            String(right.finishedAt).localeCompare(String(left.finishedAt)));
+        const latest = records[0];
+        count.textContent = latest ? `${latest.weightKg} kg` : 'Sin registro de peso';
         row.append(name, count);
+        if (latest) {
+          const detail = document.createElement('span');
+          detail.className = 'exercise-stat-detail';
+          const date = new Date(`${latest.date}T00:00:00`).toLocaleDateString('es', { day: 'numeric', month: 'short' });
+          const previous = records[1];
+          let advice = 'Registra otra sesión para comparar tu progresión.';
+          if (previous && latest.weightKg > previous.weightKg) {
+            advice = `Subiste ${Number((latest.weightKg - previous.weightKg).toFixed(1))} kg desde la sesión anterior.`;
+          } else if (previous && latest.weightKg === previous.weightKg) {
+            advice = `Si completaste las series y repeticiones con buena técnica en las últimas sesiones, considera subir ${latest.weightStep} kg la próxima vez.`;
+          } else if (previous && latest.weightKg < previous.weightKg) {
+            advice = `Bajaste ${Number((previous.weightKg - latest.weightKg).toFixed(1))} kg desde la sesión anterior.`;
+          }
+          const recentHistory = records.slice(0, 3).map(record =>
+            `${new Date(`${record.date}T00:00:00`).toLocaleDateString('es', { day: 'numeric', month: 'short' })}: ${record.weightKg} kg`
+          ).join(' · ');
+          detail.textContent = `Última sesión ${date} · ${recentHistory}. ${advice}`;
+          row.append(detail);
+        }
         stats.append(row);
       });
 
-      if (sessions.length === 0) {
+      if (finishedSessions.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'history-empty';
-        empty.textContent = 'Todavía no hay sesiones. Marca los ejercicios que hagas y finaliza el día para empezar tu historial.';
+        empty.textContent = 'Todavía no hay sesiones guardadas. Empieza un entrenamiento y pulsa “Finalizar y guardar” al terminar.';
         list.append(empty);
         return;
       }
 
-      sessions.forEach(session => {
+      finishedSessions.forEach(session => {
         const entry = document.createElement('article');
         entry.className = 'history-entry';
         const heading = document.createElement('header');
@@ -2188,9 +2235,7 @@ header {
         const isFinished = Boolean(session.finishedAt || session.completed);
         const doneCount = session.exercises.filter(exercise => exercise.completed !== false).length;
         status.className = `history-status${isFinished && doneCount < session.exercises.length ? ' partial' : ''}`;
-        status.textContent = isFinished
-          ? `${doneCount}/${session.exercises.length} realizados`
-          : 'En curso';
+        status.textContent = `${doneCount}/${session.exercises.length} realizados`;
         heading.append(title, status);
         const lines = document.createElement('div');
         lines.className = 'history-lines';
@@ -2218,11 +2263,14 @@ header {
         if (!session || !(session.finishedAt || session.completed)) return;
         (session.exercises || []).forEach(exercise => {
           if (exercise.completed === false) return;
-          const current = history.get(exercise.id) || { count: 0, date: '', weight: null };
-          current.count += 1;
-          if (Number.isFinite(exercise.weightKg) && session.date >= current.date) {
-            current.date = session.date;
-            current.weight = exercise.weightKg;
+          const current = history.get(exercise.id) || [];
+          if (Number.isFinite(exercise.weightKg)) {
+            current.push({
+              date: session.date,
+              finishedAt: session.finishedAt || session.updatedAt || '',
+              weight: exercise.weightKg,
+              weightStep: exercise.weightStep || 1
+            });
           }
           history.set(exercise.id, current);
         });
@@ -2230,10 +2278,20 @@ header {
       document.querySelectorAll('.exercise-item').forEach(item => {
         const area = item.querySelector('.progression-area');
         if (!area) return;
-        const saved = history.get(item.dataset.id) || { count: 0, weight: null };
+        const saved = history.get(item.dataset.id) || [];
         const hint = document.createElement('span');
         hint.className = 'exercise-record-hint';
-        hint.textContent = `${saved.count} ${saved.count === 1 ? 'sesión' : 'sesiones'} registradas${saved.weight !== null ? ` · Último: ${saved.weight} kg` : ''}`;
+        const sorted = [...saved].sort((left, right) => right.date.localeCompare(left.date) ||
+          String(right.finishedAt).localeCompare(String(left.finishedAt)));
+        const latest = sorted[0];
+        if (!latest) {
+          hint.textContent = 'Empieza una sesión para registrar tu progresión.';
+        } else {
+          const prior = sorted[1];
+          hint.textContent = prior && latest.weight === prior.weight
+            ? `Última vez: ${latest.weight} kg · Si completaste las reps con buena técnica, prueba +${latest.weightStep} kg.`
+            : `Última vez: ${latest.weight} kg`;
+        }
         area.replaceChildren(hint);
       });
     }
@@ -2269,14 +2327,20 @@ header {
           });
           Object.entries(imported.sessions).forEach(([key, session]) => {
             const match = /^(\d{4}-\d{2}-\d{2})-(?:routine-([\w-]+)-)?day-(\d+)$/.exec(key);
+            const uniqueSessionMatch = /^(\d{4}-\d{2}-\d{2})-session-(session-[\w-]+)$/.exec(key);
             const validExercises = Array.isArray(session?.exercises) && session.exercises.every(exercise =>
               exercise && typeof exercise.id === 'string' && typeof exercise.name === 'string' &&
               (exercise.completed === undefined || typeof exercise.completed === 'boolean') &&
               (exercise.weightKg === null || exercise.weightKg === undefined ||
                 (Number.isFinite(exercise.weightKg) && exercise.weightKg >= 0))
             );
-            if (match && session.date === match[1] && Number(session.day) === Number(match[3]) && validExercises &&
-                (!match[2] || session.routineId === match[2])) {
+            const validLegacySession = session && match && session.date === match[1] &&
+              Number(session.day) === Number(match[3]) && validExercises &&
+              (!match[2] || session.routineId === match[2]);
+            const validUniqueSession = session && uniqueSessionMatch && session.date === uniqueSessionMatch[1] &&
+              session.id === uniqueSessionMatch[2] && Number.isInteger(Number(session.day)) && validExercises &&
+              (!session.routineId || typeof session.routineId === 'string');
+            if (validLegacySession || validUniqueSession) {
               const current = workoutData.sessions[key];
               if (!current || String(session.updatedAt || '') >= String(current.updatedAt || '')) {
                 workoutData.sessions[key] = { ...session, exercises: session.exercises };
@@ -2290,6 +2354,10 @@ header {
           });
           if (!workoutData.routines.some(routine => routine.id === workoutData.activeRoutineId)) {
             workoutData.activeRoutineId = workoutData.routines[0]?.id || 'default';
+          }
+          if (!workoutData.activeSession && imported.activeSession &&
+              typeof imported.activeSession.id === 'string' && Array.isArray(imported.activeSession.exercises)) {
+            workoutData.activeSession = imported.activeSession;
           }
           routineDraft = cloneData(getActiveRoutine());
           renderRoutineManager();
@@ -2323,34 +2391,140 @@ header {
         progressFill.style.width = `${items.length ? (completed / items.length) * 100 : 0}%`;
       }
 
-      const session = activeDay ? workoutData.sessions[sessionKey(localDateKey(), Number(activeDay.dataset.day))] : null;
-      updateFinishButton(activeDay, Boolean(session?.finishedAt || session?.completed));
+      if (activeDay) {
+        updateFinishButton(activeDay, Boolean(activeSessionForDay(Number(activeDay.dataset.day))));
+      }
     }
 
-    function updateFinishButton(day, finished) {
-      const button = day ? day.querySelector('.finish-day-btn') : null;
-      if (!button) return;
-      button.classList.toggle('is-completed', finished);
-      button.setAttribute('aria-pressed', String(finished));
-      button.textContent = finished ? '✓ Día terminado · Editar' : 'Finalizar día';
+    function updateFinishButton(day, isActive) {
+      if (!day) return;
+      const startButton = day.querySelector('.start-workout-btn');
+      const finishButton = day.querySelector('.finish-day-btn');
+      const cancelButton = day.querySelector('.cancel-workout-btn');
+      const status = day.querySelector('.workout-status');
+      const activeSession = workoutData.activeSession;
+      const anotherSessionIsActive = activeSession &&
+        (Number(day.dataset.day) !== activeSession.day || workoutData.activeRoutineId !== activeSession.routineId);
+      if (startButton) {
+        startButton.hidden = isActive;
+        startButton.disabled = Boolean(anotherSessionIsActive);
+        startButton.textContent = anotherSessionIsActive ? 'Hay otra sesión en curso' : 'Empezar entrenamiento';
+      }
+      if (finishButton) finishButton.hidden = !isActive;
+      if (cancelButton) cancelButton.hidden = !isActive;
+      if (status) {
+        status.hidden = !isActive;
+        status.textContent = isActive
+          ? `Sesión iniciada ${new Date(activeSession.startedAt).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}. Los cambios se guardan al finalizar.`
+          : '';
+      }
     }
 
-    function finishDay(button) {
+    function startWorkout(button) {
       const day = button.closest('.day-content');
       if (!day) return;
       refreshForNewWorkoutDate();
-      const key = sessionKey(localDateKey(), Number(day.dataset.day));
-      const isFinished = Boolean(workoutData.sessions[key]?.finishedAt || workoutData.sessions[key]?.completed);
-      recordDay(day, isFinished ? 'reopen' : 'finish');
+      if (workoutData.activeSession) {
+        const existingDay = document.querySelector(`.day-content[data-day="${workoutData.activeSession.day}"]`);
+        if (existingDay) {
+          document.querySelectorAll('.tab-btn').forEach(tab => {
+            tab.classList.toggle('active', Number(tab.dataset.day) === workoutData.activeSession.day);
+          });
+          document.querySelectorAll('.day-content').forEach(section => {
+            section.classList.toggle('active', section === existingDay);
+          });
+          restoreDay(existingDay);
+        }
+        updateProgress();
+        return;
+      }
+      const dayNumber = Number(day.dataset.day);
+      const routine = getActiveRoutine();
+      const routineDay = routine?.days[dayNumber - 1];
+      if (!routine || !routineDay) return;
+      const exercises = routineDay.groups.flatMap(group => group.exercises).map(exercise => {
+        const previous = lastCompletedExercise(exercise.id);
+        const baseWeight = Number.isFinite(exercise.weightKg) ? exercise.weightKg : null;
+        return {
+          id: exercise.id,
+          name: exercise.name,
+          completed: false,
+          weightKg: Number.isFinite(previous?.weightKg) ? previous.weightKg : baseWeight,
+          weightStep: exercise.weightStep,
+          sets: exercise.sets,
+          reps: exercise.reps
+        };
+      });
+      workoutData.activeSession = {
+        id: makeEntityId('session'),
+        date: localDateKey(),
+        day: dayNumber,
+        dayName: routineDay.name,
+        routineId: routine.id,
+        routineName: routine.name,
+        startedAt: new Date().toISOString(),
+        exercises,
+        updatedAt: new Date().toISOString()
+      };
+      document.querySelectorAll('.day-content').forEach(restoreDay);
       updateProgress();
+      setActiveWorkoutNotice('Sesión iniciada. Marca los ejercicios realizados y ajusta los pesos; al finalizar se guardará en el historial.');
+      saveWorkoutData();
+    }
+
+    function finishWorkout(button) {
+      const day = button.closest('.day-content');
+      const activeSession = workoutData.activeSession;
+      if (!day || !activeSession || !activeSessionForDay(Number(day.dataset.day))) return;
+      const completedCount = activeSession.exercises.filter(exercise => exercise.completed).length;
+      if (completedCount === 0) {
+        const status = day.querySelector('.workout-status');
+        if (status) status.textContent = 'Marca al menos un ejercicio antes de guardar la sesión.';
+        return;
+      }
+      const finishedAt = new Date().toISOString();
+      const session = {
+        ...activeSession,
+        finishedAt,
+        completed: true,
+        updatedAt: finishedAt
+      };
+      const key = `${session.date}-session-${session.id}`;
+      workoutData.sessions[key] = session;
+      workoutData.activeSession = null;
+      document.querySelectorAll('.day-content').forEach(restoreDay);
+      updateProgress();
+      saveWorkoutData();
+      const status = document.getElementById('backup-status');
+      setActiveWorkoutNotice('Entrenamiento guardado en el historial. La rutina quedó lista para una nueva sesión.');
+    }
+
+    function cancelWorkout(button) {
+      const day = button.closest('.day-content');
+      if (!workoutData.activeSession || !window.confirm('¿Descartar la sesión en curso? No se guardará en el historial.')) return;
+      workoutData.activeSession = null;
+      document.querySelectorAll('.day-content').forEach(restoreDay);
+      updateProgress();
+      saveWorkoutData();
+      if (day) {
+        setActiveWorkoutNotice('Sesión descartada. La rutina está lista para empezar de nuevo.');
+      }
+    }
+
+    function setActiveWorkoutNotice(message) {
+      const status = document.getElementById('backup-status');
+      status.textContent = message;
     }
 
     function toggleExercise(checkbox) {
       const item = checkbox.closest('.exercise-item');
       if (!item) return;
+      const session = workoutData.activeSession;
+      if (!session || session.routineId !== workoutData.activeRoutineId ||
+          session.day !== Number(item.closest('.day-content')?.dataset.day)) return;
       refreshForNewWorkoutDate();
       setExerciseCompleted(item, !item.classList.contains('completed'));
-      recordDay(item.closest('.day-content'));
+      recordActiveSession(item.closest('.day-content'));
       updateProgress();
     }
 
@@ -2372,6 +2546,12 @@ header {
     function updateWeight(input) {
       const item = input.closest('.exercise-item');
       if (!item) return;
+      const session = workoutData.activeSession;
+      if (!session || session.routineId !== workoutData.activeRoutineId ||
+          session.day !== Number(item.closest('.day-content')?.dataset.day)) {
+        restoreDay(item.closest('.day-content'));
+        return;
+      }
       const enteredWeight = input.value;
       if (refreshForNewWorkoutDate()) input.value = enteredWeight;
       const weight = Number(input.value);
@@ -2379,8 +2559,10 @@ header {
         input.value = String(workoutData.weights[item.dataset.id] ?? 0);
         return;
       }
-      workoutData.weights[item.dataset.id] = weight;
-      recordDay(item.closest('.day-content'));
+      const exercise = session.exercises.find(entry => entry.id === item.dataset.id);
+      if (!exercise) return;
+      exercise.weightKg = weight;
+      recordActiveSession(item.closest('.day-content'));
     }
 
     let authMode = 'signIn';
@@ -2417,6 +2599,12 @@ header {
       if (value.routines !== undefined && !Array.isArray(value.routines)) {
         throw new Error('La lista de rutinas guardada no tiene un formato válido.');
       }
+      if (value.activeSession !== undefined && value.activeSession !== null &&
+          (typeof value.activeSession !== 'object' || typeof value.activeSession.id !== 'string' ||
+           typeof value.activeSession.routineId !== 'string' || !Number.isInteger(Number(value.activeSession.day)) ||
+           !Array.isArray(value.activeSession.exercises))) {
+        throw new Error('La sesión en curso guardada no tiene un formato válido.');
+      }
       const routines = (value.routines || []).map(validateRoutine);
       const routineIds = new Set();
       const exerciseIds = new Set();
@@ -2430,11 +2618,12 @@ header {
       });
       Object.keys(workoutData).forEach(key => delete workoutData[key]);
       Object.assign(workoutData, {
-        version: 3,
+        version: 4,
         weights: value.weights,
         sessions: value.sessions,
         routines,
-        activeRoutineId: typeof value.activeRoutineId === 'string' ? value.activeRoutineId : 'default'
+        activeRoutineId: typeof value.activeRoutineId === 'string' ? value.activeRoutineId : 'default',
+        activeSession: value.activeSession || null
       });
     }
 
@@ -2639,9 +2828,26 @@ header {
         const finishButton = document.createElement('button');
         finishButton.type = 'button';
         finishButton.className = 'finish-day-btn';
-        finishButton.textContent = 'Finalizar día';
-        dayBar.append(title, finishButton);
+        finishButton.textContent = 'Finalizar y guardar';
+        finishButton.hidden = true;
+        const startButton = document.createElement('button');
+        startButton.type = 'button';
+        startButton.className = 'start-workout-btn';
+        startButton.textContent = 'Empezar entrenamiento';
+        const cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.className = 'cancel-workout-btn';
+        cancelButton.textContent = 'Descartar sesión';
+        cancelButton.hidden = true;
+        const actions = document.createElement('div');
+        actions.className = 'workout-session-actions';
+        actions.append(startButton, finishButton, cancelButton);
+        dayBar.append(title, actions);
         section.append(dayBar);
+        const workoutStatus = document.createElement('p');
+        workoutStatus.className = 'workout-status';
+        workoutStatus.hidden = true;
+        section.append(workoutStatus);
 
         day.groups.forEach(group => {
           const groupBox = document.createElement('div');
@@ -2695,7 +2901,10 @@ header {
             repsBadge.className = 'badge';
             repsBadge.textContent = `${exercise.reps} Reps`;
             details.append(setsBadge, repsBadge);
-            if (exercise.weightKg !== null) {
+            const previousWeight = lastCompletedExercise(exercise.id)?.weightKg;
+            const baseWeight = workoutData.weights[exercise.id];
+            const hasWeight = exercise.weightKg !== null || Number.isFinite(previousWeight) || Number.isFinite(baseWeight);
+            if (hasWeight) {
               const stepper = document.createElement('div');
               stepper.className = 'weight-stepper';
               const decrement = document.createElement('button');
@@ -2706,7 +2915,8 @@ header {
               const input = document.createElement('input');
               input.type = 'number';
               input.className = 'weight-input';
-              input.value = String(exercise.weightKg);
+              input.value = String(Number.isFinite(previousWeight) ? previousWeight
+                : Number.isFinite(baseWeight) ? baseWeight : exercise.weightKg);
               input.min = '0';
               input.step = '0.5';
               input.setAttribute('aria-label', `Peso para ${exercise.name} en kilogramos`);
@@ -2735,7 +2945,7 @@ header {
               note.textContent = `Obs: ${exercise.notes}`;
               details.append(note);
             }
-            if (exercise.weightKg !== null) {
+            if (hasWeight) {
               const progression = document.createElement('div');
               progression.className = 'progression-area';
               info.append(progression);
@@ -2759,17 +2969,27 @@ header {
       document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {
           refreshForNewWorkoutDate();
-          const day = Number(button.dataset.day || 1);
-          document.querySelectorAll('.tab-btn').forEach(item => item.classList.toggle('active', item === button));
+          const activeSession = workoutData.activeSession;
+          const selectedDay = activeSession?.routineId === workoutData.activeRoutineId
+            ? activeSession.day : Number(button.dataset.day || 1);
+          const selectedButton = [...document.querySelectorAll('.tab-btn')]
+            .find(item => Number(item.dataset.day) === selectedDay) || button;
+          document.querySelectorAll('.tab-btn').forEach(item => item.classList.toggle('active', item === selectedButton));
           document.querySelectorAll('.day-content').forEach(section => {
-            section.classList.toggle('active', Number(section.dataset.day) === day);
-            if (Number(section.dataset.day) === day) restoreDay(section);
+            section.classList.toggle('active', Number(section.dataset.day) === selectedDay);
+            if (Number(section.dataset.day) === selectedDay) restoreDay(section);
           });
           updateProgress();
         });
       });
+      document.querySelectorAll('.start-workout-btn').forEach(button => {
+        button.addEventListener('click', () => startWorkout(button));
+      });
       document.querySelectorAll('.finish-day-btn').forEach(button => {
-        button.addEventListener('click', () => finishDay(button));
+        button.addEventListener('click', () => finishWorkout(button));
+      });
+      document.querySelectorAll('.cancel-workout-btn').forEach(button => {
+        button.addEventListener('click', () => cancelWorkout(button));
       });
       document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
         checkbox.addEventListener('click', () => toggleExercise(checkbox));
@@ -2910,6 +3130,11 @@ header {
     }
 
     function selectRoutine(routineId) {
+      if (workoutData.activeSession && workoutData.activeSession.routineId !== routineId) {
+        document.getElementById('routine-select').value = workoutData.activeSession.routineId;
+        setRoutineEditorStatus('Finaliza o descarta la sesión en curso antes de cambiar de rutina.', true);
+        return;
+      }
       if (routineDraft && draftHasUnsavedChanges() &&
           !window.confirm('Hay cambios sin guardar en esta rutina. ¿Descartarlos?')) {
         document.getElementById('routine-select').value =
@@ -2929,6 +3154,9 @@ header {
     function saveRoutineDraft() {
       try {
         const routine = validateRoutine(routineDraft);
+        if (workoutData.activeSession) {
+          throw new Error('Finaliza o descarta la sesión en curso antes de editar la rutina.');
+        }
         const index = workoutData.routines.findIndex(item => item.id === routine.id);
         if (index < 0) workoutData.routines.push(routine);
         else workoutData.routines[index] = routine;
@@ -2944,6 +3172,10 @@ header {
     }
 
     function startNewRoutine() {
+      if (workoutData.activeSession) {
+        setRoutineEditorStatus('Finaliza o descarta la sesión en curso antes de crear otra rutina.', true);
+        return;
+      }
       if (draftHasUnsavedChanges() && !window.confirm('Hay cambios sin guardar. ¿Descartarlos y crear una rutina nueva?')) return;
       routineDraft = makeRoutine();
       renderRoutineManager();
@@ -2951,6 +3183,10 @@ header {
     }
 
     function deleteCurrentRoutine() {
+      if (workoutData.activeSession) {
+        setRoutineEditorStatus('Finaliza o descarta la sesión en curso antes de eliminar una rutina.', true);
+        return;
+      }
       const routine = workoutData.routines.find(item => item.id === routineDraft?.id);
       if (!routine || workoutData.routines.length <= 1) return;
       if (!window.confirm(`¿Eliminar la rutina "${routine.name}"? Sus sesiones históricas se conservarán.`)) return;

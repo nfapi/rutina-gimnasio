@@ -1,6 +1,6 @@
 create table if not exists public.user_workouts (
   user_id uuid primary key references auth.users (id) on delete cascade,
-  data jsonb not null default '{"version":3,"weights":{},"sessions":{},"routines":[],"activeRoutineId":"default"}'::jsonb,
+  data jsonb not null default '{"version":4,"weights":{},"sessions":{},"routines":[],"activeRoutineId":"default","activeSession":null}'::jsonb,
   updated_at timestamptz not null default now()
 );
 

@@ -1,6 +1,8 @@
 # Rutina Gym
 
-App web para registrar entrenamientos, pesos e historial por rutina. Usa Supabase para las cuentas y la sincronización privada; la app estática se puede publicar en GitHub Pages.
+App web para gestionar rutinas base, iniciar sesiones de entrenamiento, registrar ejercicios y pesos, y consultar el historial y la progresión de cargas. Usa Supabase para las cuentas y la sincronización privada; la app estática se puede publicar en GitHub Pages.
+
+Cada entrenamiento se inicia desde un día de la rutina y se guarda como una sesión independiente al finalizar. La rutina base no cambia; los pesos de la última sesión se sugieren al volver a entrenar y el historial muestra fechas y progresión.
 
 ## Configurar Supabase
 
